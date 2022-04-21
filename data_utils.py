@@ -42,8 +42,8 @@ def load_data(tokenizer, file_path, batch_size, device):
 
         print(len(sentence), len(labels))
         assert len(sentence) == len(labels) and len(sentence) <= 500 and len(labels) <= 500
-        sentence += [0] * (100 - len(sentence))
-        labels += [0] * (100 - len(labels))
+        sentence += [0] * (500 - len(sentence))
+        labels += [0] * (500 - len(labels))
 
         sentence = torch.tensor(sentence, device=device)
         labels = torch.tensor(labels, device=device)
