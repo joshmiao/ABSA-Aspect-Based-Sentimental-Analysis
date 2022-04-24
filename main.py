@@ -23,15 +23,16 @@ model = model.BertAndLinear(bert_model_type=model_type).to(device)
 tokenizer = BertTokenizer.from_pretrained(model_path + 'vocab.txt')
 
 # define hyperparameters and prepare data
-epoch = 30
+epoch = 15
 batch_size = 16
 data_paths = ['./data/Semeval&Twitter/semeval14/Laptops_Train.xml.seg',
               './data/Semeval&Twitter/semeval14/Laptops_Test_Gold.xml.seg',
               './data/Semeval&Twitter/semeval14/Restaurants_Train.xml.seg',
               './data/Semeval&Twitter/semeval14/Restaurants_Test_Gold.xml.seg',
               './data/Semeval&Twitter/acl-14-short-data/train.raw',
-              './data/Semeval&Twitter/acl-14-short-data/test.raw']
-train_dataset = data_utils.load_data(file_path=data_paths[0], tokenizer=tokenizer, batch_size=batch_size,
+              './data/Semeval&Twitter/acl-14-short-data/test.raw',
+              './data/Semeval&Twitter/all.txt']
+train_dataset = data_utils.load_data(file_path=data_paths[6], tokenizer=tokenizer, batch_size=batch_size,
                                      device=device, max_length=100)
 test_dataset = data_utils.load_data(file_path=data_paths[1], tokenizer=tokenizer, batch_size=1,
                                     device=device, max_length=100)
@@ -87,3 +88,4 @@ for _ in range(epoch):
     f1 = 2 * pre * rec / (pre + rec + eps)
     print('acc.={0:.6f} pre.={1:.6f} rec.={2:.6f} f1={3:.6f}'.format(acc, pre, rec, f1))
     print('----------------------------------------------------------------------------------------')
+torch.save(model, 'model.pt')

@@ -4,7 +4,7 @@ from transformers import BertModel, BertConfig
 
 
 class BertAndLinear(nn.Module):
-    def __init__(self, bert_model_type=None, bert_model_path=None, type_nums=4):
+    def __init__(self, bert_model_type=None, bert_model_path=None, type_nums=7):
         super(BertAndLinear, self).__init__()
         if bert_model_path is not None:
             self.config = BertConfig.from_pretrained(bert_model_path + 'bert_config.json')

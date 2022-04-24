@@ -16,7 +16,7 @@ class MyDataset(Dataset):
 
 def load_data(tokenizer, file_path,  batch_size, device, max_length=500):
     data = []
-    label_dict = {'0': 1, '1': 2, '-1': 3}
+    label_dict = {'0': 1, '1': 3, '-1': 5}
     data_file = open(file_path, 'r', encoding='UTF-8')
     last_text = ''
     m = -1
@@ -36,7 +36,7 @@ def load_data(tokenizer, file_path,  batch_size, device, max_length=500):
         for word in text.split(' '):
             if word == '$T$':
                 tokenized_word = tokenizer.encode(target_word)
-                labels += [label_dict[target_label]] * len(tokenized_word)
+                labels += [label_dict[target_label]] + [label_dict[target_label] + 1] * (len(tokenized_word) - 1)
             else:
                 tokenized_word = tokenizer.encode(word)
                 labels += [0] * len(tokenized_word)
