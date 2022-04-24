@@ -17,18 +17,20 @@ class MyDataset(Dataset):
 def load_data(tokenizer, file_path,  batch_size, device, max_length=500):
     data = []
     label_dict = {'0': 1, '1': 2, '-1': 3}
-    data_file = open(file_path, 'r')
+    data_file = open(file_path, 'r', encoding='UTF-8')
     last_text = ''
+    m = -1
     while True:
         # get every 3 lines and truncate the last '\n'
         text = data_file.readline()[:-1]
         target_word = data_file.readline()[:-1]
         target_label = data_file.readline()[:-1]
         # print(text)
-        # print(word)
-        # print(word_label)
+        # print(target_word)
+        # print(target_label)
         if not text:
             break
+        # print('now w = ', target_word, 't = ', target_label)
         assert target_label in ['0', '-1', '1']
         labels = []
         for word in text.split(' '):
@@ -42,6 +44,8 @@ def load_data(tokenizer, file_path,  batch_size, device, max_length=500):
         sentence = tokenizer.encode(text)
 
         # print(len(sentence), len(labels))
+        if len(sentence) > m:
+            m = len(sentence)
         assert len(sentence) == len(labels) and len(sentence) <= max_length and len(labels) <= max_length
         sentence += [0] * (max_length - len(sentence))
         labels += [0] * (max_length - len(labels))
@@ -56,6 +60,7 @@ def load_data(tokenizer, file_path,  batch_size, device, max_length=500):
         else:
             data.append([sentence, labels])
         last_text = text
+    # print('max length = ', m)
     return DataLoader(MyDataset(data), batch_size=batch_size, shuffle=True)
 
 

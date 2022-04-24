@@ -23,14 +23,18 @@ model = model.BertAndLinear(bert_model_type=model_type).to(device)
 tokenizer = BertTokenizer.from_pretrained(model_path + 'vocab.txt')
 
 # define hyperparameters and prepare data
-epoch = 5
-batch_size = 5
+epoch = 30
+batch_size = 16
 data_paths = ['./data/Semeval&Twitter/semeval14/Laptops_Train.xml.seg',
-              './data/Semeval&Twitter/semeval14/Laptops_Test_Gold.xml.seg']
+              './data/Semeval&Twitter/semeval14/Laptops_Test_Gold.xml.seg',
+              './data/Semeval&Twitter/semeval14/Restaurants_Train.xml.seg',
+              './data/Semeval&Twitter/semeval14/Restaurants_Test_Gold.xml.seg',
+              './data/Semeval&Twitter/acl-14-short-data/train.raw',
+              './data/Semeval&Twitter/acl-14-short-data/test.raw']
 train_dataset = data_utils.load_data(file_path=data_paths[0], tokenizer=tokenizer, batch_size=batch_size,
-                                     device=device, max_length=500)
-test_dataset = data_utils.load_data(file_path=data_paths[1], tokenizer=tokenizer, batch_size=batch_size,
-                                    device=device, max_length=500)
+                                     device=device, max_length=100)
+test_dataset = data_utils.load_data(file_path=data_paths[1], tokenizer=tokenizer, batch_size=1,
+                                    device=device, max_length=100)
 # view data
 print(len(train_dataset))
 for idx, (x, y) in enumerate(train_dataset):
@@ -45,16 +49,41 @@ optimizer = optim.AdamW(model.parameters(), lr=2e-5, weight_decay=1e-4)
 for _ in range(epoch):
     model.train()
     st = time.time()
+    tot_loss = torch.tensor(0, device=device, dtype=torch.float32)
     for idx, (x, y) in enumerate(train_dataset):
         y_pred = model(x)
-        # print(y_pred)
-        # print(y_pred.size())
-        # print(y)
-        # print(y.size())
         loss = func.cross_entropy(y_pred.permute(0, 2, 1), y)
-        print('loss =', loss)
+        # print('loss =', loss)
+        tot_loss += loss
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+    print('epoch{0:} :'.format(_))
+    print('avg_training_loss = ', tot_loss / len(train_dataset))
     print('used time = {0:}'.format(time.time() - st))
+
     model.eval()
+    tot_cnt, acc_cnt, true_cnt, pred_cnt, true_pred_cnt = 0, 0, 0, 0, 0
+    for idx, (x, y) in enumerate(test_dataset):
+        y_pred = model(x)
+        y_pred = torch.max(y_pred, dim=2)[1]
+        tot_cnt += len(y_pred[0])
+        for i in range(len(y_pred[0])):
+            if y_pred[0][i] == y[0][i]:
+                acc_cnt += 1
+            if y_pred[0][i] != 0:
+                pred_cnt += 1
+                if y_pred[0][i] == y[0][i]:
+                    true_pred_cnt += 1
+            if y[0][i] != 0:
+                true_cnt += 1
+        # print(y_pred, y)
+    print('tot_cnt={0:} acc_cnt={1:} true_cnt={2:} pred_cnt={3:} true_pred_cnt={4:}'
+          .format(tot_cnt, acc_cnt, true_cnt, pred_cnt, true_pred_cnt))
+    eps = 1e-8
+    acc = acc_cnt / tot_cnt
+    pre = true_pred_cnt / pred_cnt
+    rec = true_pred_cnt / true_cnt
+    f1 = 2 * pre * rec / (pre + rec + eps)
+    print('acc.={0:.6f} pre.={1:.6f} rec.={2:.6f} f1={3:.6f}'.format(acc, pre, rec, f1))
+    print('----------------------------------------------------------------------------------------')
