@@ -10,7 +10,7 @@ class BertAndLinear(nn.Module):
             self.config = BertConfig.from_pretrained(bert_model_path + 'bert_config.json')
             self.bert = BertModel.from_pretrained(bert_model_path + 'bert_model.ckpt.index',
                                                   from_tf=True, config=self.config)
-        if bert_model_type is not None:
+        elif bert_model_type is not None:
             self.config = BertConfig.from_pretrained(bert_model_type)
             self.bert = BertModel.from_pretrained(bert_model_type)
         self.fc = nn.Linear(self.config.hidden_size, type_nums)  # 直接分类

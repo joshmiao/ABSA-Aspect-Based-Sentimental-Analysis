@@ -24,6 +24,10 @@ while True:
     s = s.replace('.', ' . ')
     s = s.replace('!', ' ! ')
     s = s.replace('?', ' ? ')
+    s = s.replace('(', ' ( ')
+    s = s.replace(')', ' ) ')
+    s = s.replace(';', ' ; ')
+    s = s.replace(':', ' : ')
     x = torch.tensor([tokenizer.encode(s)], device=device)
     y_pred = model(x)
     y_pred = torch.max(y_pred, dim=2)[1]
@@ -43,7 +47,7 @@ while True:
             else:
                 print('Aspect: {0:} Polarity: {1:}'.format(aspect, polarity[tag]))
                 tag = cata[y_pred[0][idx].item()]
-                aspect = ''
+                aspect = word + ' '
         else:
             if y_pred[0][idx] != 0:
                 tag = cata[y_pred[0][idx].item()]
