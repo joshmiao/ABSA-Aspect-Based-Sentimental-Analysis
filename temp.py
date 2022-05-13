@@ -49,15 +49,14 @@ def f2():
         def __len__(self):
             return self.len
 
-    x = torch.tensor([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
-    y = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]]
-    ds = MyDataset(x)
-    print(ds.__len__())
-    dl = DataLoader(dataset=ds, batch_size=2)
+    x = torch.tensor([[1, 2, 3], [4, 5, 6], [-1, -2, -3], [-4, -5, -6]])
+    y = torch.tensor([[7, 8], [10, 11], [-7, -8], [-10, -11]])
+    ds = TensorDataset(x, y)
+    dl = DataLoader(dataset=ds, batch_size=2, shuffle=True)
 
     for step, data in enumerate(dl):
-        xx, yy = data
-        print(step, xx, yy)
+        x, label = data
+        print(step, x, label)
 
 
 if __name__ == '__main__':

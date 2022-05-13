@@ -1,29 +1,35 @@
+# Disable CUDA devices to prevent Tensorflow from allocating memory
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 import time
-from transformers import BertModel, BertConfig, BertTokenizer, BertForPreTraining
+from transformers import BertTokenizer, RobertaTokenizerFast
 import data_utils
-import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as func
 import torch.optim as optim
 import model
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 print(torch.cuda.is_available())
-print(torch.cuda.device_count())
+print('There are {0:} CUDA device(s) on this computer.'.format(torch.cuda.device_count()))
 device = torch.device('cuda:0')
 
 # prepare model and corresponding tokenizer
-model_path = './BERT_model/uncased_L-12_H-768_A-12/'
+model_path = './BERT_model/'
 model_type = 'bert-base-uncased'
-model = model.BertAndLinear(bert_model_type=model_type).to(device)
-tokenizer = BertTokenizer.from_pretrained(model_path + 'vocab.txt')
+# model_path = './Roberta_model/'
+# model_type = 'roberta-base'
+
+model = model.BertAndLinear(bert_model_path=model_path).to(device)
+# model = model.BertAndTransformer(bert_model_type=model_path).to(device)
+# model = model.RoBERTaAndLinear(roberta_model_path=model_path).to(device)
+
+tokenizer = BertTokenizer.from_pretrained(model_path)
+# tokenizer = RobertaTokenizerFast.from_pretrained(model_path)
 
 # define hyperparameters and prepare data
-epoch = 15
+epoch = 30
 batch_size = 16
 data_paths = ['./data/Semeval&Twitter/semeval14/Laptops_Train.xml.seg',
               './data/Semeval&Twitter/semeval14/Laptops_Test_Gold.xml.seg',
@@ -32,10 +38,14 @@ data_paths = ['./data/Semeval&Twitter/semeval14/Laptops_Train.xml.seg',
               './data/Semeval&Twitter/acl-14-short-data/train.raw',
               './data/Semeval&Twitter/acl-14-short-data/test.raw',
               './data/Semeval&Twitter/all.txt']
-train_dataset = data_utils.load_data(file_path=data_paths[6], tokenizer=tokenizer, batch_size=batch_size,
-                                     device=device, max_length=100)
+train_dataset = data_utils.load_data(file_path=data_paths[0], tokenizer=tokenizer, batch_size=batch_size,
+                                     device=device, max_length=110)
 test_dataset = data_utils.load_data(file_path=data_paths[1], tokenizer=tokenizer, batch_size=1,
-                                    device=device, max_length=100)
+                                    device=device, max_length=110)
+# train_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[0], tokenizer=tokenizer,
+#                                                           batch_size=batch_size, device=device, max_length=200)
+# test_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[1], tokenizer=tokenizer,
+#                                                          batch_size=1, device=device, max_length=200)
 # view data
 print(len(train_dataset))
 for idx, (x, y) in enumerate(train_dataset):
@@ -83,8 +93,8 @@ for _ in range(epoch):
           .format(tot_cnt, acc_cnt, true_cnt, pred_cnt, true_pred_cnt))
     eps = 1e-8
     acc = acc_cnt / tot_cnt
-    pre = true_pred_cnt / pred_cnt
-    rec = true_pred_cnt / true_cnt
+    pre = true_pred_cnt / (pred_cnt + eps)
+    rec = true_pred_cnt / (true_cnt + eps)
     f1 = 2 * pre * rec / (pre + rec + eps)
     print('acc.={0:.6f} pre.={1:.6f} rec.={2:.6f} f1={3:.6f}'.format(acc, pre, rec, f1))
     print('----------------------------------------------------------------------------------------')
