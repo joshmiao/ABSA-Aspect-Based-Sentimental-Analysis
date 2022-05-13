@@ -1,4 +1,4 @@
-# Disable CUDA devices to prevent Tensorflow from allocating memory
+# Disable CUDA devices to prevent Tensorflow from allocating GPU memory
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
@@ -11,7 +11,7 @@ import torch.optim as optim
 import model
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-print(torch.cuda.is_available())
+print('CUDA is' + (' ' if torch.cuda.is_available() else ' not ') + 'available.')
 print('There are {0:} CUDA device(s) on this computer.'.format(torch.cuda.device_count()))
 device = torch.device('cuda:0')
 
