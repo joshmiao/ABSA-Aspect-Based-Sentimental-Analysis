@@ -1,6 +1,7 @@
 import os
 # Disable CUDA devices to prevent Tensorflow from allocating GPU memory
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+import random
 
 from transformers import BertTokenizer, RobertaTokenizerFast
 import data_utils
@@ -21,7 +22,7 @@ roberta_model_path = './Roberta_model/'
 roberta_model_type = 'roberta-base'
 
 # define hyperparameters
-epoch = 30
+epoch = 3
 batch_size = 16
 
 # data_paths
@@ -66,6 +67,11 @@ RL_loss, RL_f1 = train.train_model(model=RL_model, device=device, train_dataset=
 RT_loss, RT_f1 = train.train_model(model=RT_model, device=device, train_dataset=roberta_train_dataset,
                                    test_dataset=roberta_test_dataset, epoch=epoch)
 
+print('max F1_measure for BertAndLinear = {0:.4f}'.format(max(BL_f1)))
+print('max F1_measure for BertAndTransformer = {0:.4f}'.format(max(BT_f1)))
+print('max F1_measure for RoBERTaAndLinear = {0:.4f}'.format(max(RL_f1)))
+print('max F1_measure for RoBERTaAndTransformer = {0:.4f}'.format(max(RT_f1)))
+
 fig, axs = plt.subplots(2, 1, figsize=(15, 10))
 axs[0].set_title('Training Loss', fontsize=24)
 axs[0].set_xlabel('Number of epoch')
@@ -76,6 +82,7 @@ axs[0].plot(range(epoch), BT_loss, label='bert_tf_loss')
 axs[0].plot(range(epoch), RL_loss, label='roberta_linear_loss')
 axs[0].plot(range(epoch), RT_loss, label='roberta_tf_loss')
 axs[0].legend()
+
 axs[1].set_title('F1_measure', fontsize=24)
 axs[1].set_xlabel('Number of epoch')
 axs[1].set_ylabel('F1_measure')
@@ -85,7 +92,7 @@ axs[1].plot(range(epoch), BT_f1, label='bert_tf_f1')
 axs[1].plot(range(epoch), RL_f1, label='roberta_linear_f1')
 axs[1].plot(range(epoch), RT_f1, label='roberta_tf_f1')
 axs[1].legend()
-fig.tight_layout(pad=3, h_pad=1.0)
+fig.tight_layout(pad=3, h_pad=8.0)
 
 plt.show()
 fig.savefig('fig.png', format='png')
