@@ -47,8 +47,8 @@ def load_data(tokenizer, file_path,  batch_size, device, max_length=500):
         # print(len(sentence), len(labels))
         if len(sentence) > m:
             m = len(sentence)
-        print(len(sentence))
-        print(len(label))
+        # print(len(sentence))
+        # print(len(label))
         assert len(sentence) == len(label) and len(sentence) <= max_length and len(label) <= max_length
         sentence += [0] * (max_length - len(sentence))
         label += [0] * (max_length - len(label))
@@ -100,7 +100,7 @@ def load_data_with_offsets_mapping(tokenizer, file_path, batch_size, device, max
         assert len(encoded_text) == len(label) and len(encoded_text) <= max_length and len(label) <= max_length
         if len(encoded_text) > m:
             m = len(encoded_text)
-        encoded_text += [0] * (max_length - len(encoded_text))
+        encoded_text += [1] * (max_length - len(encoded_text))
         label += [0] * (max_length - len(label))
         encoded_text = torch.tensor(encoded_text, device=device)
         label = torch.tensor(label, device=device)

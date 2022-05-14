@@ -55,3 +55,23 @@ class RoBERTaAndLinear(nn.Module):
         embeddings = self.roberta(input_ids)[0]
         weights = self.fc(embeddings)
         return weights
+
+
+class RoBERTaAndTransformer(nn.Module):
+    def __init__(self, roberta_model_type=None, roberta_model_path=None, type_nums=7):
+        super(RoBERTaAndTransformer, self).__init__()
+        if roberta_model_path is not None:
+            self.roberta_config = RobertaConfig.from_pretrained(roberta_model_path)
+            self.roberta = RobertaModel.from_pretrained(roberta_model_path,
+                                                        config=self.roberta_config)
+        elif roberta_model_type is not None:
+            self.roberta_config = RobertaConfig.from_pretrained(roberta_model_type)
+            self.roberta = RobertaModel.from_pretrained(roberta_model_type)
+        self.tfm = nn.TransformerEncoderLayer(self.roberta_config.hidden_size, nhead=8)  # 直接分类
+        self.fc = nn.Linear(self.roberta_config.hidden_size, type_nums)
+
+    def forward(self, input_ids):
+        embeddings = self.roberta(input_ids)[0]
+        encoded = self.tfm(embeddings)
+        weights = self.fc(encoded)
+        return weights
