@@ -1,7 +1,6 @@
 import os
 # Disable CUDA devices to prevent Tensorflow from allocating GPU memory
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-import random
 
 from transformers import BertTokenizer, RobertaTokenizerFast
 import data_utils
@@ -16,13 +15,13 @@ print('CUDA is' + (' ' if torch.cuda.is_available() else ' not ') + 'available.'
 print('There are {0:} CUDA device(s) on this computer.'.format(torch.cuda.device_count()))
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 
-bert_model_path = './BERT_model/'
+bert_model_path = './pretrained_model/BERT_model/'
 bert_model_type = 'bert-base-uncased'
-roberta_model_path = './Roberta_model/'
+roberta_model_path = './pretrained_model/Roberta_model/'
 roberta_model_type = 'roberta-base'
 
 # define hyperparameters
-epoch = 3
+epoch = 40
 batch_size = 16
 
 # data_paths
@@ -35,21 +34,21 @@ data_paths = ['./data/Semeval&Twitter/semeval14/Laptops_Train.xml.seg',
               './data/Semeval&Twitter/all.txt']
 
 # prepare model and corresponding tokenizer
-BL_model = model.BertAndLinear(bert_model_path=bert_model_path).to(device)
-BT_model = model.BertAndTransformer(bert_model_type=bert_model_path).to(device)
-RL_model = model.RoBERTaAndLinear(roberta_model_path=roberta_model_path).to(device)
-RT_model = model.RoBERTaAndTransformer(roberta_model_path=roberta_model_path).to(device)
+BL_model = model.BertAndLinear(bert_model_path=bert_model_path, noise_lambda=0.2).to(device)
+BT_model = model.BertAndTransformer(bert_model_type=bert_model_path, noise_lambda=0.2).to(device)
+RL_model = model.RoBERTaAndLinear(roberta_model_path=roberta_model_path, noise_lambda=0.2).to(device)
+RT_model = model.RoBERTaAndTransformer(roberta_model_path=roberta_model_path, noise_lambda=0.2).to(device)
 
 bert_tokenizer = BertTokenizer.from_pretrained(bert_model_path)
 roberta_tokenizer = RobertaTokenizerFast.from_pretrained(roberta_model_path)
 
-bert_train_dataset = data_utils.load_data(file_path=data_paths[0], tokenizer=bert_tokenizer, batch_size=batch_size,
+bert_train_dataset = data_utils.load_data(file_path=data_paths[2], tokenizer=bert_tokenizer, batch_size=batch_size,
                                           device=device, max_length=110)
-bert_test_dataset = data_utils.load_data(file_path=data_paths[1], tokenizer=bert_tokenizer, batch_size=1,
+bert_test_dataset = data_utils.load_data(file_path=data_paths[3], tokenizer=bert_tokenizer, batch_size=1,
                                          device=device, max_length=110)
-roberta_train_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[0], tokenizer=roberta_tokenizer,
+roberta_train_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[2], tokenizer=roberta_tokenizer,
                                                                   batch_size=batch_size, device=device, max_length=110)
-roberta_test_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[1], tokenizer=roberta_tokenizer,
+roberta_test_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[3], tokenizer=roberta_tokenizer,
                                                                  batch_size=1, device=device, max_length=110)
 # view data
 print(len(bert_train_dataset))
