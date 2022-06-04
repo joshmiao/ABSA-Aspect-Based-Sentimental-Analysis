@@ -70,6 +70,9 @@
 &emsp;&emsp;最后，添加随机噪声对于某些实验结果的提升虽然规律性不强，但是还是值得我们注意的，可以作为微调预训练模型的技巧之一，可能可以很轻易得获得更好结果。要获得更好的结果，可能还需要对于噪声大小`noise_lambda`这个超参数进行调节。
 ### 6. 参考文献
 [1]Li, X., Bing, L., Zhang, W. and Lam, W., 2019. Exploiting BERT for end-to-end aspect-based sentiment analysis. arXiv preprint arXiv:1910.00883.
+
 [2]Devlin, J., Chang, M.W., Lee, K. and Toutanova, K., 2018. Bert: Pre-training of deep bidirectional transformers for language understanding. arXiv preprint arXiv:1810.04805.
+
 [3]Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., Levy, O., Lewis, M., Zettlemoyer, L. and Stoyanov, V., 2019. Roberta: A robustly optimized bert pretraining approach. arXiv preprint arXiv:1907.11692.
+
 [4]Wu, C., Wu, F., Qi, T., Huang, Y. and Xie, X., 2022. NoisyTune: A Little Noise Can Help You Finetune Pretrained Language Models Better. arXiv preprint arXiv:2202.12024.
