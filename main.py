@@ -42,13 +42,13 @@ RT_model = model.RoBERTaAndTransformer(roberta_model_path=roberta_model_path, no
 bert_tokenizer = BertTokenizer.from_pretrained(bert_model_path)
 roberta_tokenizer = RobertaTokenizerFast.from_pretrained(roberta_model_path)
 
-bert_train_dataset = data_utils.load_data(file_path=data_paths[2], tokenizer=bert_tokenizer, batch_size=batch_size,
+bert_train_dataset = data_utils.load_data(file_path=data_paths[4], tokenizer=bert_tokenizer, batch_size=batch_size,
                                           device=device, max_length=110)
-bert_test_dataset = data_utils.load_data(file_path=data_paths[3], tokenizer=bert_tokenizer, batch_size=1,
+bert_test_dataset = data_utils.load_data(file_path=data_paths[5], tokenizer=bert_tokenizer, batch_size=1,
                                          device=device, max_length=110)
-roberta_train_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[2], tokenizer=roberta_tokenizer,
+roberta_train_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[4], tokenizer=roberta_tokenizer,
                                                                   batch_size=batch_size, device=device, max_length=110)
-roberta_test_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[3], tokenizer=roberta_tokenizer,
+roberta_test_dataset = data_utils.load_data_with_offsets_mapping(file_path=data_paths[5], tokenizer=roberta_tokenizer,
                                                                  batch_size=1, device=device, max_length=110)
 # view data
 print(len(bert_train_dataset))
