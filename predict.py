@@ -11,10 +11,10 @@ print(torch.cuda.device_count())
 device = torch.device('cuda:0')
 
 # prepare model and corresponding tokenizer
-model_path = './BERT_model/uncased_L-12_H-768_A-12/'
-model_type = 'bert-base-uncased'
+bert_model_path = './pretrained_model/BERT_model/'
+bert_model_type = 'bert-base-uncased'
 model = torch.load('model.pt').to(device)
-tokenizer = BertTokenizer.from_pretrained(model_path + 'vocab.txt')
+tokenizer = BertTokenizer.from_pretrained(bert_model_path)
 
 polarity = {1: 'Neutral', 3: 'Positive', 5: 'Negative'}
 cata = {1: 1, 2: 1, 3: 3, 4: 3, 5: 5, 6: 5}

@@ -68,7 +68,9 @@
 &emsp;&emsp;其次，使用`Transformer Encoder`层作为最后一层网络层对于模型在特定数据集和模型上才有较好效果，没有显著的规律，可能是由于预训练模型已经较为适合完成情感分析的下游任务。
 
 &emsp;&emsp;最后，添加随机噪声对于某些实验结果的提升虽然规律性不强，但是还是值得我们注意的，可以作为微调预训练模型的技巧之一，可能可以很轻易得获得更好结果。要获得更好的结果，可能还需要对于噪声大小`noise_lambda`这个超参数进行调节。
-### 6. 参考文献
+### 6. 额外工作
+&emsp;&emsp;将所有训练数据合并，利用最佳模型进行训练，并将最后标签序列解码就可以得到一个基于实体的情感分析器。基于**BERT**分词器的相关代码在`predict.py`中。
+### 7. 参考文献
 [1]Li, X., Bing, L., Zhang, W. and Lam, W., 2019. Exploiting BERT for end-to-end aspect-based sentiment analysis. arXiv preprint arXiv:1910.00883.
 
 [2]Devlin, J., Chang, M.W., Lee, K. and Toutanova, K., 2018. Bert: Pre-training of deep bidirectional transformers for language understanding. arXiv preprint arXiv:1810.04805.
